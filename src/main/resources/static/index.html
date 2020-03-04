@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	    <title>Blueprints</title>
+	    <meta charset="UTF-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <LINK REL=StyleSheet HREF="style.css" TYPE="text/css" MEDIA=screen>
+	    <link rel="stylesheet" href="/webjars/bootstrap/4.1.2/css/bootstrap.min.css" />
+	    
+	    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	    <link href="https://fonts.googleapis.com/css?family=Playfair+Display&display=swap" rel="stylesheet">	    
+
+
+	    <script src="/webjars/jquery/3.1.0/jquery.min.js"></script>
+    	<script src="/webjars/bootstrap/4.1.2/js/bootstrap.min.js"></script>
+	    <script src="js/apimock.js"></script>
+		<script src="js/apiclient.js"></script>
+		<script src="js/app.js"></script>
+
+		<!--
+	    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+		-->
+	</head>
+    <body>
+    	<h1 style="background-color:DodgerBlue;"> Blueprints </h1>
+    	<div class="input-group mb-3" style = "width:1000px;">
+    		<label for="username" style = "font-family:'Playfair Display';"> Author: &nbsp;&nbsp; </label>
+			<input id = "idEnterName" type="text" class="form-control" placeholder="Enter Name" aria-label="Enter Name" aria-describedby="basic-addon2" style = "width:10%;">
+			<div class="input-group-append">
+		    <button class="btn btn-outline-secondary" type="button" style = "width:320px;" onclick="app.updatePlanes(document.getElementById('idEnterName').value)"> Get blueprints </button>
+		 	</div>
+		</div>
+
+        <div style="display: flex; flex-wrap: wrap">
+            <div>
+                <div>
+                    <h2 style="display: inline-block"> Blueprints: </h2>
+                    <h2 id = "blueprintName" style="display: inline-block"> </h2>
+                </div>
+                <div id = "idTable"> </div>
+                <div id ="idGetSum" style = "font-family:'Playfair Display';"> </div>
+            </div>
+            <div>
+                <div>
+                    <h2 style="display: inline-block">Current Blueprint: </h2>
+                    <h2 id="blueName" style="display: inline-block"></h2>
+                </div>
+                <canvas id="canvasId" width="200" height="200"></canvas>
+            </div>
+        </div>
+
+		<div style = "align-items: center;">
+        </div>
+    </body>
+</html>
