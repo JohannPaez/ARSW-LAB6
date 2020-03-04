@@ -23,7 +23,7 @@
 		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 		-->
 	</head>
-    <body>
+    <body onload="app.drawPoint()">
     	<h1 style="background-color:DodgerBlue;"> Blueprints </h1>
     	<div class="input-group mb-3" style = "width:1000px;">
     		<label for="username" style = "font-family:'Playfair Display';"> Author: &nbsp;&nbsp; </label>
@@ -50,6 +50,9 @@
                 <canvas id="canvasId" width="200" height="200"></canvas>
             </div>
         </div>
+
+		<h2> Canvas DrawPoint And Notify </h2>
+		<canvas id="canvasDrawPoint"  style="cursor:crosshair"></canvas>
 
 		<div style = "align-items: center;">
         </div>

@@ -3,6 +3,29 @@ var app = (function () {
 	var planos = [];
 	var blues = [];
 	var cambiarApi = apimock;
+    var pointSize = 3;
+    function getPosition(event){
+         var rect = canvasDrawPoint.getBoundingClientRect();
+         var x = event.clientX - rect.left;
+         var y = event.clientY - rect.top;
+         drawCoordinates(x,y);
+    }
+    function drawCoordinates(x,y){
+      	var ctx = document.getElementById("canvasDrawPoint").getContext("2d");
+      	ctx.fillStyle = "blue"; // Red color
+        ctx.beginPath();
+        ctx.arc(x, y, pointSize, 0, Math.PI * 2, true);
+        ctx.fill();
+        //notifyAlert();
+    }
+    function notifyAlert() {
+        canvasDrawPoint.addEventListener("pointerdown", function(event){
+            alert('pointerdown at '+event.pageX+','+event.pageY);
+
+         });
+    }
+
+
 	var callBack = function(error, datos) {
 		if (error != null) {
 			return;
@@ -58,17 +81,42 @@ var app = (function () {
 		tabla += "</tbody> </table>";
 		return tabla;
 	}
-	
 	var sumTotalPoints = function(total, blueprint) {
 		return total + blueprint.puntos;
 	}
-	
 	return {       
 		    setNameAuthor: function(author) {
             nombreAutor = author;
         },        
         updatePlanes: function(author) {
         	var Blueprint = cambiarApi.getBlueprintsByAuthor(author, callBack); 
-        }        
-    }	
+        },
+        drawPoint: function() {
+            $("#canvasDrawPoint").click(function(e){
+                getPosition(e);
+            });
+        },
+        init: function(){
+
+              console.info('initialized');
+
+              //if PointerEvent is suppported by the browser:
+              if(window.PointerEvent) {
+                canvasDrawPoint.addEventListener("pointerdown", function(event){
+                  alert('pointerdown at '+event.pageX+','+event.pageY);
+
+                });
+              }
+              else {
+                canvasDrawPoint.addEventListener("mousedown", function(event){
+                            alert('mousedown at '+event.clientX+','+event.clientY);
+
+                  }
+                );
+              }
+              $("#canvasDrawPoint").click(function(e){
+                              getPosition(e);
+              });
+        }
+    }
 })();
