@@ -39,7 +39,23 @@
                     <h2 style="display: inline-block"> Blueprints: </h2>
                     <h2 id = "blueprintName" style="display: inline-block"> </h2>
                 </div>
-                <div id = "idTable"> </div>
+                <div id = "idTable">
+					<table class='table' style = 'width:500px; align-content:center;'>
+						<thead class='thead-dark'>
+						<tr>
+							<th scope='col'> Blueprint name </th>
+							<th scope='col'> Number of points </th>
+							<th scope='col'> </th>
+							</tr>
+						</thead>
+						<tbody id = "tableBody">
+						</tbody>
+					</table>
+
+
+
+
+				</div>
                 <div id ="idGetSum" style = "font-family:'Playfair Display';"> </div>
             </div>
             <div>
@@ -47,14 +63,9 @@
                     <h2 style="display: inline-block">Current Blueprint: </h2>
                     <h2 id="blueName" style="display: inline-block"></h2>
                 </div>
-                <canvas id="canvasId" width="200" height="200"></canvas>
+                <canvas id="canvasDrawPoint" width="500" height="500"></canvas>
             </div>
         </div>
 
-		<h2> Canvas DrawPoint And Notify </h2>
-		<canvas id="canvasDrawPoint"  style="cursor:crosshair"></canvas>
-
-		<div style = "align-items: center;">
-        </div>
     </body>
 </html>

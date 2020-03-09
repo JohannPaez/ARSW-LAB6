@@ -2,20 +2,35 @@ var app = (function () {
 	var nombreAutor = "";		
 	var planos = [];
 	var blues = [];
-	var cambiarApi = apimock;
+	var cambiarApi = apiclient;
     var pointSize = 3;
+    var displayCanvas= false;
+    var canvasCtx;
+	var canvas;
+	var currentBlueprint;
+
+    function getCanvas() {
+		if (!canvasCtx){
+			canvas = document.getElementById("canvasDrawPoint");
+			canvasCtx = canvas.getContext("2d");
+		}
+	}
     function getPosition(event){
-         var rect = canvasDrawPoint.getBoundingClientRect();
-         var x = event.clientX - rect.left;
-         var y = event.clientY - rect.top;
-         drawCoordinates(x,y);
+		if (displayCanvas){
+			var rect = canvasDrawPoint.getBoundingClientRect();
+			var x = event.clientX - rect.left;
+			var y = event.clientY - rect.top;
+			drawCoordinates(x, y);
+			currentBlueprint.points.push({x:x,y:y});
+			drawCurrentBlueprint();
+		}
     }
     function drawCoordinates(x,y){
-      	var ctx = document.getElementById("canvasDrawPoint").getContext("2d");
-      	ctx.fillStyle = "blue"; // Red color
-        ctx.beginPath();
-        ctx.arc(x, y, pointSize, 0, Math.PI * 2, true);
-        ctx.fill();
+      	getCanvas();
+		canvasCtx.fillStyle = "blue"; // Red color
+		canvasCtx.beginPath();
+		canvasCtx.arc(x, y, pointSize, 0, Math.PI * 2, true);
+		canvasCtx.fill();
         //notifyAlert();
     }
     function notifyAlert() {
@@ -32,54 +47,62 @@ var app = (function () {
 		}
 		blues = datos;
 		planos = datos.map(function(blueprint) {
+			currentBlueprint=null;
+			displayCanvas= false;
+			drawCurrentBlueprint();
 			return {
 				name: blueprint.name,
 				puntos: blueprint.points.length
 			}
 		});
-		var stringTable = table();
-		$("#idTable").html(stringTable);
+		table();
 		var getSum = planos.reduce(sumTotalPoints, 0);
 		$("#idGetSum").text("Total user points: " + getSum);
 		$("#blueprintName").text((datos[0]).author);
 	}
 	var table = function() {
-		var tabla = "<table class='table' style = 'width:500px; align-content:center;'>" +
-						"<thead class='thead-dark'>" +
-							"<tr>" +
-								"<th scope='col'> Blueprint name </th>" +
-								"<th scope='col'> Number of points </th>" +
-								"<th scope='col'> </th>" +
-							"</tr>" +
-						"</thead>" +
-						"<tbody>";
-		planos.forEach(function(plano, i) {
-			let butId = plano.name+i;
-			tabla += "<tr>" +
-						"<td>" + plano.name + "</td>" +
-						"<td>" + plano.puntos + "</td>" +
-						"<td> <button id='"+butId+"' type='button' class='btn btn-secondary btn-sm'> Open </button> </td>" +
-					"</tr>";
-					$(document).on("click", "#"+butId, function() {
-						var canvas = $("#canvasId")[0];
-						var name = $("#blueName");
-						name.text(plano.name);
-						let ctx = canvas.getContext("2d");
-						ctx.beginPath();
-						ctx.clearRect(0,0,canvas.width,canvas.height);
-						let figure = blues.find(blue => blue.name === plano.name)
-						figure.points.forEach( (point , i ) => {
-							if (i === 0) {
-								ctx.moveTo(point.x, point.y);
-							} else {
-								ctx.lineTo(point.x, point.y);
-							}
-							ctx.stroke();
-						})
-					})
+		var tbody= $("#tableBody");
+		tbody.empty();
+		planos.forEach(function(plano) {
+			var name = $("#blueName");
+			name.text("");
+			var tr= $('<tr>');
+			var nameTd =$('<td>');
+			console.log('nameTd 1', nameTd);
+			var pointTd =$('<td>');
+			var buttonTd=$('<td>');
+			var buttonButton=$('<button>');
+			nameTd.append(plano.name);
+			pointTd.append(plano.puntos);
+			buttonButton.append("Open");
+			buttonButton.click(function() {
+				displayCanvas = true;
+				var name = $("#blueName");
+				name.text(plano.name);
+				currentBlueprint = blues.find(blue => blue.name === plano.name);
+				drawCurrentBlueprint();
 			});
-		tabla += "</tbody> </table>";
-		return tabla;
+			buttonTd.append(buttonButton);
+			tr.append(nameTd,pointTd,buttonTd);
+			tbody.append(tr);
+		});
+	}
+
+
+	function drawCurrentBlueprint() {
+		getCanvas();
+		canvasCtx.beginPath();
+		canvasCtx.clearRect(0,0,canvas.width,canvas.height);
+		if (currentBlueprint) {
+			currentBlueprint.points.forEach((point, i) => {
+				if (i === 0) {
+					canvasCtx.moveTo(point.x, point.y);
+				} else {
+					canvasCtx.lineTo(point.x, point.y);
+				}
+				canvasCtx.stroke();
+			})
+		}
 	}
 	var sumTotalPoints = function(total, blueprint) {
 		return total + blueprint.puntos;
