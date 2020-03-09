@@ -101,7 +101,7 @@ var app = (function () {
 	function drawCurrentBlueprint() {
 		getCanvas();
 		canvasCtx.beginPath();
-		canvasCtx.clearRect(0,0,canvas.width,canvas.height);
+		canvasCtx.clearRect(0,0,500,500);
 		if (currentBlueprint) {
 			currentBlueprint.points.forEach((point, i) => {
 				if (i === 0) {
@@ -111,13 +111,72 @@ var app = (function () {
 				}
 				canvasCtx.stroke();
 			})
+			drawOptions();
 		}
-		drawOptions();
+
 	}
 
 	function drawOptions() {
-
+    	var buttonSection = $("#buttonContainer");
+    	buttonSection.empty();
+    	var save = $('<button>').append("Save/Update");
+		var delet = $('<button>').append("Delete");
+		buttonSection.append(save,delet);
+		save.click(saveBlueprint());
 	}
+
+	function saveBlueprint() {
+    	var putPoints = function () {
+			var data = JSON.stringify({author: currentBlueprint.author ,name: currentBlueprint.name ,points: currentBlueprint.points});
+			var putPoints = $.ajax({
+				url:"/blueprints",
+				type: "PUT",
+				data: data,
+				contentType: "application/json",
+			})
+			putPoints.then(
+				function () {
+					console.info("OK");
+				},
+				function () {
+					console.info("ERROR");
+				}
+			);
+			return putPoints;
+		}
+
+		var getPoints = function () {
+			var promise = $.get("/blueprints/"+ currentBlueprint.author);
+			promise.then(
+				function (data) {
+					newData = data;
+				},
+				function () {
+					alert("$.get failed!");
+				}
+			);
+			return promise;
+		};
+
+		var finalAction = function () {
+			planos = newData.map(function(blueprint) {
+				return {
+					puntos: blueprint.points.length
+				}
+			});
+			var getSum = planos.reduce(sumTotalPoints, 0);
+			$("#idGetSum").text("Total user points: " + getSum);
+		};
+
+		return {
+			chainedPromises: function () {
+				putPoints()
+                        .then(getPoints)
+                        .then(finalAction);
+			}
+		};
+	}
+
 	var sumTotalPoints = function(total, blueprint) {
 		return total + blueprint.puntos;
 	}
@@ -133,25 +192,5 @@ var app = (function () {
                 getPosition(e);
             });
         },
-        init: function(){
-              console.info('initialized');
-              //if PointerEvent is suppported by the browser:
-              if(window.PointerEvent) {
-                canvasDrawPoint.addEventListener("pointerdown", function(event){
-                  alert('pointerdown at '+event.pageX+','+event.pageY);
-
-                });
-              }
-              else {
-                canvasDrawPoint.addEventListener("mousedown", function(event){
-                            alert('mousedown at '+event.clientX+','+event.clientY);
-
-                  }
-                );
-              }
-              $("#canvasDrawPoint").click(function(e){
-                              getPosition(e);
-              });
-		}
     }
 })();
