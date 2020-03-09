@@ -61,14 +61,22 @@ var app = (function () {
 		$("#blueprintName").text((datos[0]).author);
 	}
 	var table = function() {
-		var tbody= $("#tableBody");
-		tbody.empty();
+    	var table = $("#idTable");
+		table.empty();
+    	var thead = $('<thead>');
+    	var trTable = $('<tr>');
+    	var thName  = $('<th>').append("Blueprint name");
+		var thPoints  = $('<th>').append("Number of points");
+		var thButtons  = $('<th>');
+    	trTable.append(thName,thPoints,thButtons);
+    	thead.append(trTable);
+    	table.append(thead);
+		var tbody= $('<tbody>');
 		planos.forEach(function(plano) {
 			var name = $("#blueName");
 			name.text("");
 			var tr= $('<tr>');
 			var nameTd =$('<td>');
-			console.log('nameTd 1', nameTd);
 			var pointTd =$('<td>');
 			var buttonTd=$('<td>');
 			var buttonButton=$('<button>');
@@ -86,6 +94,7 @@ var app = (function () {
 			tr.append(nameTd,pointTd,buttonTd);
 			tbody.append(tr);
 		});
+		table.append(tbody);
 	}
 
 
@@ -103,6 +112,11 @@ var app = (function () {
 				canvasCtx.stroke();
 			})
 		}
+		drawOptions();
+	}
+
+	function drawOptions() {
+
 	}
 	var sumTotalPoints = function(total, blueprint) {
 		return total + blueprint.puntos;
@@ -120,9 +134,7 @@ var app = (function () {
             });
         },
         init: function(){
-
               console.info('initialized');
-
               //if PointerEvent is suppported by the browser:
               if(window.PointerEvent) {
                 canvasDrawPoint.addEventListener("pointerdown", function(event){
@@ -140,6 +152,6 @@ var app = (function () {
               $("#canvasDrawPoint").click(function(e){
                               getPosition(e);
               });
-        }
+		}
     }
 })();

@@ -16,6 +16,14 @@
 	    <script src="js/apimock.js"></script>
 		<script src="js/apiclient.js"></script>
 		<script src="js/app.js"></script>
+		<script>
+			document.addEventListener('keypress', logKey);
+			function logKey(e) {
+				if (e.keyCode === 13) {
+					app.updatePlanes(document.getElementById('idEnterName').value)
+				}
+			}
+		</script>
 
 		<!--
 	    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
@@ -29,7 +37,7 @@
     		<label for="username" style = "font-family:'Playfair Display';"> Author: &nbsp;&nbsp; </label>
 			<input id = "idEnterName" type="text" class="form-control" placeholder="Enter Name" aria-label="Enter Name" aria-describedby="basic-addon2" style = "width:10%;">
 			<div class="input-group-append">
-		    <button class="btn btn-outline-secondary" type="button" style = "width:320px;" onclick="app.updatePlanes(document.getElementById('idEnterName').value)"> Get blueprints </button>
+		    <button id= "firstButton" class="btn btn-outline-secondary" type="button" style = "width:320px;" onclick="app.updatePlanes(document.getElementById('idEnterName').value)"> Get blueprints </button>
 		 	</div>
 		</div>
 
@@ -39,22 +47,11 @@
                     <h2 style="display: inline-block"> Blueprints: </h2>
                     <h2 id = "blueprintName" style="display: inline-block"> </h2>
                 </div>
-                <div id = "idTable">
-					<table class='table' style = 'width:500px; align-content:center;'>
-						<thead class='thead-dark'>
-						<tr>
-							<th scope='col'> Blueprint name </th>
-							<th scope='col'> Number of points </th>
-							<th scope='col'> </th>
-							</tr>
-						</thead>
+                <div>
+					<table id = "idTable" class='table' style = 'width:500px; align-content:center;'>
 						<tbody id = "tableBody">
 						</tbody>
 					</table>
-
-
-
-
 				</div>
                 <div id ="idGetSum" style = "font-family:'Playfair Display';"> </div>
             </div>
@@ -63,7 +60,11 @@
                     <h2 style="display: inline-block">Current Blueprint: </h2>
                     <h2 id="blueName" style="display: inline-block"></h2>
                 </div>
-                <canvas id="canvasDrawPoint" width="500" height="500"></canvas>
+				<div>
+					<canvas id="canvasDrawPoint" width="500" height="500"></canvas>
+					<div id = "buttonContainer">
+					</div>
+				</div>
             </div>
         </div>
 
