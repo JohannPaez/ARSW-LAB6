@@ -67,7 +67,7 @@ var app = (function () {
 		name.empty();
 		var name = $("#blueName");
 		name.text("");
-		if (planos !== []){
+		if (planos.length !== 0){
 			var thead = $('<thead>');
 			var trTable = $('<tr>');
 			var thName  = $('<th>').append("Blueprint name");
@@ -180,7 +180,8 @@ var app = (function () {
 
 		return putPoints()
                         .then(getPoints)
-                        .then(finalAction);
+                        .then(finalAction)
+						.then(table);
 
 
 	}
@@ -217,7 +218,6 @@ var app = (function () {
 				},
 				function (e) {
 					planos = [];
-					console.log(planos)
 				}
 			);
 			currentBlueprint=null;
@@ -225,12 +225,12 @@ var app = (function () {
 		};
 
 		var finalAction = function () {
-			console.log("Final action");
 			var getSum = planos.reduce(sumTotalPoints, 0);
 			$("#idGetSum").text("Total user points: " + getSum);
 		};
 
 		function errorCorrection(){
+			displayCanvas = false;
 			finalAction();
 			table();
 			drawCurrentBlueprint();
