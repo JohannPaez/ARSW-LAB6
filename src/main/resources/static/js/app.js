@@ -23,6 +23,7 @@ var app = (function () {
 			var x = event.clientX - rect.left;
 			var y = event.clientY - rect.top;
 			drawCoordinates(x, y);
+			console.log(currentBlueprint);
 			currentBlueprint.points.push({x:x,y:y});
 			drawCurrentBlueprint();
 		}
@@ -69,8 +70,10 @@ var app = (function () {
 			var name = $("#blueprintName");
 			name.empty();	
 		}
-		var name = $("#blueName");
-		name.text("");
+		if (currentBlueprint == null){
+			var name = $("#blueName");
+			name.text("");
+		}
 		if (planos.length !== 0){
 			var thead = $('<thead>');
 			var trTable = $('<tr>');
@@ -172,7 +175,6 @@ var app = (function () {
 							puntos: len								
 						}
 					});
-					currentBlueprint = $("#idInput").val();
 
 				},
 				function (e) {
@@ -191,14 +193,22 @@ var app = (function () {
 						.then(getBlue)
 						.then(buttonCreate)
                         .then(finalAction)
-						.then(table)
-						.then(drawCurrentBlueprint);
+						.then(updateBlueprint)
+						.then(table);
 	}
+
+	function updateBlueprint(){
+    	var name =  $("#idInput").val();
+		console.log(name);
+		currentBlueprint = blues.find(blue => blue.name === name);
+		console.log(currentBlueprint);
+	}
+
 	function drawCurrentBlueprint() {
 		getCanvas();
 		canvasCtx.beginPath();
 		canvasCtx.clearRect(0,0,500,500);
-		if (currentBlueprint) {
+		if (currentBlueprint && currentBlueprint.points) {
 			currentBlueprint.points.forEach((point, i) => {
 				if (i === 0) {
 					canvasCtx.moveTo(point.x, point.y);
