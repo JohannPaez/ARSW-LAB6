@@ -62,7 +62,6 @@ public class BlueprintAPIController {
     
     @RequestMapping(method = RequestMethod.POST)	
     public ResponseEntity<?> AddNewBlueprint(@RequestBody Blueprint newBp){
-        
         try {
             bps.addNewBlueprint(newBp);
             return new ResponseEntity<>(HttpStatus.CREATED);
@@ -75,7 +74,6 @@ public class BlueprintAPIController {
     
     @RequestMapping(path = "/{author}/{name}",method = RequestMethod.PUT)	
     public ResponseEntity<?> PutBlueprint(@PathVariable ("author") String author, @PathVariable ("name") String name, @RequestBody Blueprint newBp ){
-        
         try {
             bps.modifyOrAddBlueprint(newBp, author, name);
             return new ResponseEntity<>(HttpStatus.CREATED);
@@ -83,6 +81,18 @@ public class BlueprintAPIController {
             Logger.getLogger(BlueprintAPIController.class.getName()).log(Level.SEVERE, null, ex);
             return new ResponseEntity<>(ex.getMessage(),HttpStatus.FORBIDDEN);
         }
+    }
+
+    @RequestMapping(path = "/{author}/{name}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> DeleteBlueprint(@PathVariable ("author") String author, @PathVariable ("name") String name){
+        try {
+            bps.deleteBlueprint(author,name);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (BlueprintNotFoundException ex) {
+            Logger.getLogger(BlueprintAPIController.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>(ex.getMessage(),HttpStatus.FORBIDDEN);
+        }
+
     }
 }
 

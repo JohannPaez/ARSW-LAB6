@@ -63,38 +63,44 @@ var app = (function () {
 	var table = function() {
     	var table = $("#idTable");
 		table.empty();
-    	var thead = $('<thead>');
-    	var trTable = $('<tr>');
-    	var thName  = $('<th>').append("Blueprint name");
-		var thPoints  = $('<th>').append("Number of points");
-		var thButtons  = $('<th>');
-    	trTable.append(thName,thPoints,thButtons);
-    	thead.append(trTable);
-    	table.append(thead);
-		var tbody= $('<tbody>');
-		planos.forEach(function(plano) {
+		var name = $("#blueprintName");
+		name.empty();
+		var name = $("#blueName");
+		name.text("");
+		if (planos !== []){
+			var thead = $('<thead>');
+			var trTable = $('<tr>');
+			var thName  = $('<th>').append("Blueprint name");
+			var thPoints  = $('<th>').append("Number of points");
+			var thButtons  = $('<th>');
+			trTable.append(thName,thPoints,thButtons);
+			thead.append(trTable);
+			table.append(thead);
+			var tbody= $('<tbody>');
 			var name = $("#blueName");
 			name.text("");
-			var tr= $('<tr>');
-			var nameTd =$('<td>');
-			var pointTd =$('<td>');
-			var buttonTd=$('<td>');
-			var buttonButton=$('<button>');
-			nameTd.append(plano.name);
-			pointTd.append(plano.puntos);
-			buttonButton.append("Open");
-			buttonButton.click(function() {
-				displayCanvas = true;
-				var name = $("#blueName");
-				name.text(plano.name);
-				currentBlueprint = blues.find(blue => blue.name === plano.name);
-				drawCurrentBlueprint();
+			planos.forEach(function(plano) {
+				var tr= $('<tr>');
+				var nameTd =$('<td>');
+				var pointTd =$('<td>');
+				var buttonTd=$('<td>');
+				var buttonButton=$('<button>');
+				nameTd.append(plano.name);
+				pointTd.append(plano.puntos);
+				buttonButton.append("Open");
+				buttonButton.click(function() {
+					displayCanvas = true;
+					var name = $("#blueName");
+					name.text(plano.name);
+					currentBlueprint = blues.find(blue => blue.name === plano.name);
+					drawCurrentBlueprint();
+				});
+				buttonTd.append(buttonButton);
+				tr.append(nameTd,pointTd,buttonTd);
+				tbody.append(tr);
 			});
-			buttonTd.append(buttonButton);
-			tr.append(nameTd,pointTd,buttonTd);
-			tbody.append(tr);
-		});
-		table.append(tbody);
+			table.append(tbody);
+		}
 	}
 
 
@@ -122,60 +128,121 @@ var app = (function () {
     	var save = $('<button>').append("Save/Update");
 		var delet = $('<button>').append("Delete");
 		buttonSection.append(save,delet);
-		save.click(saveBlueprint());
+		save.click(saveBlueprint);
+		delet.click(deleteBlueprint);
 	}
 
 	function saveBlueprint() {
     	var putPoints = function () {
-			var data = JSON.stringify({author: currentBlueprint.author ,name: currentBlueprint.name ,points: currentBlueprint.points});
+			var data = JSON.stringify({author: currentBlueprint.author, name: currentBlueprint.name,  points: currentBlueprint.points});
 			var putPoints = $.ajax({
-				url:"/blueprints",
+				url:"/blueprints/" + currentBlueprint.author + "/" + currentBlueprint.name,
 				type: "PUT",
 				data: data,
 				contentType: "application/json",
 			})
 			putPoints.then(
 				function () {
-					console.info("OK");
+					console.log("OK");
 				},
-				function () {
-					console.info("ERROR");
+				function (e) {
+					console.log("ERROR", e);
 				}
 			);
 			return putPoints;
 		}
 
 		var getPoints = function () {
-			var promise = $.get("/blueprints/"+ currentBlueprint.author);
+			var promise = $.ajax({
+				url:"http://localhost:8080/blueprints/"+ currentBlueprint.author,
+				type: "GET"
+			});
 			promise.then(
 				function (data) {
-					newData = data;
+					planos = data.map(function(blueprint) {
+						return {
+							name: blueprint.name,
+							puntos: blueprint.points.length
+						}
+					});
 				},
-				function () {
-					alert("$.get failed!");
+				function (e) {
+					console.log("ERROR", e);
 				}
 			);
 			return promise;
 		};
 
 		var finalAction = function () {
-			planos = newData.map(function(blueprint) {
-				return {
-					puntos: blueprint.points.length
-				}
-			});
 			var getSum = planos.reduce(sumTotalPoints, 0);
 			$("#idGetSum").text("Total user points: " + getSum);
 		};
 
-		return {
-			chainedPromises: function () {
-				putPoints()
+		return putPoints()
                         .then(getPoints)
                         .then(finalAction);
-			}
-		};
+
+
 	}
+
+	function deleteBlueprint() {
+    	var deleteBlue = function (){
+			var deleted = $.ajax({
+				url:"/blueprints/" + currentBlueprint.author + "/" + currentBlueprint.name,
+				type: "DELETE",
+			})
+			deleted.then(
+				function () {
+					console.log("OK");
+				},
+				function (e) {
+					console.log("ERROR", e);
+				}
+			);
+			return deleted ;
+		}
+		var getBlueprints = function () {
+			var promise = $.ajax({
+				url:"http://localhost:8080/blueprints/"+ currentBlueprint.author,
+				type: "GET"
+			});
+			promise.then(
+				function (data) {
+					planos = data.map(function(blueprint) {
+						return {
+							name: blueprint.name,
+							puntos: blueprint.points.length
+						}
+					});
+				},
+				function (e) {
+					planos = [];
+					console.log(planos)
+				}
+			);
+			currentBlueprint=null;
+			return promise;
+		};
+
+		var finalAction = function () {
+			console.log("Final action");
+			var getSum = planos.reduce(sumTotalPoints, 0);
+			$("#idGetSum").text("Total user points: " + getSum);
+		};
+
+		function errorCorrection(){
+			finalAction();
+			table();
+			drawCurrentBlueprint();
+		}
+		return deleteBlue()
+			.then(getBlueprints)
+			.then(errorCorrection)
+			.catch(errorCorrection);
+
+	}
+
+
 
 	var sumTotalPoints = function(total, blueprint) {
 		return total + blueprint.puntos;
